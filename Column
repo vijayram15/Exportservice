@@ -1,0 +1,29 @@
+package com.example.pdfexcel.model;
+
+public class Column {
+    private String label;
+    private String valueKey;
+
+    public Column(String label, String valueKey) {
+        this.label = label;
+        this.valueKey = valueKey;
+    }
+
+    // Getter and setter methods (or use Lombok for brevity)
+
+    public String getLabel() {
+        return label;
+    }
+
+    public void setLabel(String label) {
+        this.label = label;
+    }
+
+    public String getValueKey() {
+        return valueKey;
+    }
+
+    public void setValueKey(String valueKey) {
+        this.valueKey = valueKey;
+    }
+}
