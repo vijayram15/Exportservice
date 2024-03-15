@@ -1,0 +1,97 @@
+package com.example.pdfexcel.service;
+
+import org.apache.poi.ss.usermodel.*;
+import org.apache.poi.xssf.usermodel.XSSFWorkbook;
+
+import java.io.ByteArrayOutputStream;
+import java.util.List;
+import java.util.Map;
+
+public class ExcelUtil {
+
+    public static byte[] generateExcel(List<Map<String, Object>> data, List<Table> tables) {
+        try (ByteArrayOutputStream outputStream = new ByteArrayOutputStream()) {
+            Workbook workbook = new XSSFWorkbook();
+            Sheet sheet = workbook.createSheet("Sheet1");
+
+            addElements(sheet, data, tables);
+
+            workbook.write(outputStream);
+            return outputStream.toByteArray();
+        } catch (Exception e) {
+            e.printStackTrace();
+            // Handle the exception as needed
+            return new byte[0];
+        }
+    }
+
+    private static void addElements(Sheet sheet, List<Map<String, Object>> data, List<Table> tables) {
+        for (Table table : tables) {
+            if ("table".equalsIgnoreCase(table.getElementType())) {
+                addTable(sheet, data, table);
+            }
+            // Add conditions for other element types if needed
+        }
+    }
+
+    private static void addTable(Sheet sheet, List<Map<String, Object>> data, Table table) {
+        int rowNum = 0;
+        Row headerRow = sheet.createRow(rowNum++);
+        int colNum = 0;
+
+        for (Column column : table.getColumns()) {
+            Cell headerCell = headerRow.createCell(colNum++);
+            headerCell.setCellValue(column.getLabel());
+        }
+
+        CellStyle numberStyle = createNumberStyle(sheet.getWorkbook());
+        CellStyle currencyStyle = createCurrencyStyle(sheet.getWorkbook());
+        CellStyle dateStyle = createDateStyle(sheet.getWorkbook());
+
+        for (Map<String, Object> rowData : data) {
+            Row dataRow = sheet.createRow(rowNum++);
+            colNum = 0;
+
+            for (Column column : table.getColumns()) {
+                Cell dataCell = dataRow.createCell(colNum++);
+
+                switch (column.getDataType().toLowerCase()) {
+                    case "number":
+                        dataCell.setCellValue((double) rowData.get(column.getValueKey()));
+                        dataCell.setCellStyle(numberStyle);
+                        break;
+                    case "currency":
+                        dataCell.setCellValue((double) rowData.get(column.getValueKey()));
+                        dataCell.setCellStyle(currencyStyle);
+                        break;
+                    case "text":
+                        dataCell.setCellValue((String) rowData.get(column.getValueKey()));
+                        break;
+                    case "date":
+                        dataCell.setCellValue((String) rowData.get(column.getValueKey()));
+                        dataCell.setCellStyle(dateStyle);
+                        break;
+                    // Add more cases for other data types as needed
+                }
+            }
+        }
+    }
+
+    private static CellStyle createNumberStyle(Workbook workbook) {
+        CellStyle style = workbook.createCellStyle();
+        style.setDataFormat(workbook.createDataFormat().getFormat("#,##0"));
+        return style;
+    }
+
+    private static CellStyle createCurrencyStyle(Workbook workbook) {
+        CellStyle style = workbook.createCellStyle();
+        style.setDataFormat(workbook.createDataFormat().getFormat("($#,##0.00)"));
+        return style;
+    }
+
+    private static CellStyle createDateStyle(Workbook workbook) {
+        CellStyle style = workbook.createCellStyle();
+        style.setDataFormat(workbook.createDataFormat().getFormat("yyyy-mm-dd"));
+        return style;
+    }
+}
