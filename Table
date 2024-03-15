@@ -1,0 +1,44 @@
+package com.example.pdfexcel.model;
+
+import java.util.List;
+
+public class Table {
+    private String elementType;
+    private List<Column> columns;
+    private String alignment;
+    private List<Metadata> metadata;
+
+    // Getter and setter methods (or use Lombok for brevity)
+
+    public String getElementType() {
+        return elementType;
+    }
+
+    public void setElementType(String elementType) {
+        this.elementType = elementType;
+    }
+
+    public List<Column> getColumns() {
+        return columns;
+    }
+
+    public void setColumns(List<Column> columns) {
+        this.columns = columns;
+    }
+
+    public String getAlignment() {
+        return alignment;
+    }
+
+    public void setAlignment(String alignment) {
+        this.alignment = alignment;
+    }
+
+    public List<Metadata> getMetadata() {
+        return metadata;
+    }
+
+    public void setMetadata(List<Metadata> metadata) {
+        this.metadata = metadata;
+    }
+}
