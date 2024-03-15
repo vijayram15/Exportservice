@@ -1,0 +1,16 @@
+package com.example.pdfexcel.service;
+
+import com.example.pdfexcel.model.Table;
+import org.springframework.stereotype.Service;
+
+import java.util.List;
+import java.util.Map;
+
+@Service
+public class ExcelService {
+
+    public byte[] generateExcel(List<Map<String, Object>> data, List<Table> tables) {
+        // Your Excel generation logic goes here
+        return new byte[0]; // Replace with actual Excel generation logic
+    }
+}
