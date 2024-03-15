@@ -1,0 +1,28 @@
+import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.ObjectMapper;
+
+public class JsonUtil {
+
+    private static final ObjectMapper objectMapper = new ObjectMapper();
+
+    public static Object getValue(String jsonData, String key) {
+        try {
+            JsonNode jsonNode = objectMapper.readTree(jsonData);
+            String[] keys = key.split("\\.");
+
+            for (String nestedKey : keys) {
+                jsonNode = jsonNode.get(nestedKey);
+                if (jsonNode == null) {
+                    // Handle if any key in the chain is missing
+                    return null;
+                }
+            }
+
+            return jsonNode.isValueNode() ? jsonNode.asText() : jsonNode;
+        } catch (Exception e) {
+            e.printStackTrace();
+            // Handle the exception as needed
+            return null;
+        }
+    }
+}
