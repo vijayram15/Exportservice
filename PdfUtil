@@ -1,0 +1,160 @@
+package com.example.pdfexcel.service;
+
+import com.itextpdf.text.*;
+import com.itextpdf.text.pdf.PdfPCell;
+import com.itextpdf.text.pdf.PdfPTable;
+
+import java.util.List;
+import java.util.Map;
+
+public class PdfUtil {
+
+    public static void addElements(Document document, List<Map<String, Object>> data, List<Table> tables) throws Exception {
+        for (Table table : tables) {
+            switch (table.getElementType().toLowerCase()) {
+                case "logo":
+                    addLogo(document, (String) table.getAttributes().get("logoPath"));
+                    break;
+                case "table":
+                    addTable(document, data, table);
+                    break;
+                case "text":
+                    addText(document, (String) table.getAttributes().get("content"));
+                    break;
+                case "image":
+                    addImage(document, (String) table.getAttributes().get("imagePath"));
+                    break;
+                case "separator":
+                    addSeparator(document);
+                    break;
+                case "barcode":
+                    addBarcode(document, (String) table.getAttributes().get("barcodeValue"));
+                    break;
+                case "chart":
+                    addChart(document, (String) table.getAttributes().get("chartType"));
+                    break;
+                case "footer":
+                    addFooter(document, (String) table.getAttributes().get("footerText"));
+                    break;
+                // Add more cases for other element types as needed
+            }
+        }
+    }
+
+    private static void addLogo(Document document, String logoPath) throws Exception {
+        Image logo = Image.getInstance(logoPath);
+        logo.scaleToFit(100, 100);
+        document.add(logo);
+        document.add(new PdfPTable(1)); // Add a blank line after the logo
+    }
+
+    private static void addTable(Document document, List<Map<String, Object>> data, Table table) throws Exception {
+        PdfPTable pdfPTable = new PdfPTable(table.getColumns().size());
+        pdfPTable.setWidthPercentage(100);
+
+        // Set table alignment
+        pdfPTable.setHorizontalAlignment(Element.ALIGN_LEFT);
+        if ("center".equalsIgnoreCase(table.getAlignment())) {
+            pdfPTable.setHorizontalAlignment(Element.ALIGN_CENTER);
+        } else if ("right".equalsIgnoreCase(table.getAlignment())) {
+            pdfPTable.setHorizontalAlignment(Element.ALIGN_RIGHT);
+        }
+
+        // Add table headers
+        for (Column column : table.getColumns()) {
+            PdfPCell headerCell = new PdfPCell(new Paragraph(column.getLabel()));
+            pdfPTable.addCell(headerCell);
+        }
+
+        // Add table data
+        for (Map<String, Object> rowData : data) {
+            for (Column column : table.getColumns()) {
+                PdfPCell dataCell = new PdfPCell(new Paragraph(String.valueOf(rowData.get(column.getValueKey()))));
+                pdfPTable.addCell(dataCell);
+            }
+        }
+
+        document.add(pdfPTable);
+        document.add(new PdfPTable(1)); // Add a blank line after the table
+    }
+
+    private static void addText(Document document, String content) throws DocumentException {
+        Paragraph paragraph = new Paragraph(content);
+        document.add(paragraph);
+    }
+
+    private static void addImage(Document document, String imagePath) throws Exception {
+        Image image = Image.getInstance(imagePath);
+        image.scaleToFit(300, 300);
+        document.add(image);
+        document.add(new PdfPTable(1)); // Add a blank line after the image
+    }
+
+    private static void addSeparator(Document document) throws DocumentException {
+        LineSeparator separator = new LineSeparator();
+        document.add(separator);
+        document.add(new PdfPTable(1)); // Add a blank line after the separator
+    }
+
+    private static void addBarcode(Document document, String barcodeValue) throws Exception {
+        Barcode39 barcode = new Barcode39();
+        barcode.setCode(barcodeValue);
+        Image barcodeImage = barcode.createImageWithBarcode(null, null, null);
+        document.add(barcodeImage);
+        document.add(new PdfPTable(1)); // Add a blank line after the barcode
+    }
+
+    private static void addChart(Document document, String chartType) throws Exception {
+        JFreeChart chart = createChart(chartType);
+        ByteArrayOutputStream chartImageStream = new ByteArrayOutputStream();
+        ChartUtilities.writeChartAsJPEG(chartImageStream, chart, 300, 300);
+        Image chartImage = Image.getInstance(chartImageStream.toByteArray());
+        document.add(chartImage);
+        document.add(new PdfPTable(1)); // Add a blank line after the chart
+    }
+
+    private static JFreeChart createChart(String chartType) {
+        if ("pie".equalsIgnoreCase(chartType)) {
+import org.jfree.chart.ChartFactory;
+import org.jfree.chart.JFreeChart;
+import org.jfree.data.general.DefaultPieDataset;
+
+import java.io.ByteArrayOutputStream;
+import com.itextpdf.text.Image;
+import com.itextpdf.text.pdf.Barcode39;
+import com.itextpdf.text.pdf.PdfWriter;
+
+public class PdfUtil {
+
+    // ... (Previous code remains unchanged)
+
+    private static void addChart(Document document, String chartType) throws Exception {
+        JFreeChart chart = createChart(chartType);
+        ByteArrayOutputStream chartImageStream = new ByteArrayOutputStream();
+        ChartUtilities.writeChartAsJPEG(chartImageStream, chart, 300, 300);
+        Image chartImage = Image.getInstance(chartImageStream.toByteArray());
+        document.add(chartImage);
+        document.add(new PdfPTable(1)); // Add a blank line after the chart
+    }
+
+    private static JFreeChart createChart(String chartType) {
+        if ("pie".equalsIgnoreCase(chartType)) {
+            DefaultPieDataset dataset = new DefaultPieDataset();
+            dataset.setValue("Category 1", 50);
+            dataset.setValue("Category 2", 30);
+            dataset.setValue("Category 3", 20);
+            return ChartFactory.createPieChart("Pie Chart", dataset, true, true, false);
+        } else {
+            // Default to a simple bar chart
+            DefaultCategoryDataset dataset = new DefaultCategoryDataset();
+            dataset.addValue(50, "Series 1", "Category 1");
+            dataset.addValue(30, "Series 1", "Category 2");
+            dataset.addValue(20, "Series 1", "Category 3");
+            return ChartFactory.createBarChart("Bar Chart", "Category", "Value", dataset);
+        }
+    }
+
+    private static void addFooter(Document document, String footerText) throws DocumentException {
+        document.add(new Phrase(footerText, FontFactory.getFont(FontFactory.HELVETICA, 12)));
+    }
+}
