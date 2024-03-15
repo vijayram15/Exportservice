@@ -1,0 +1,89 @@
+package com.example.pdfexcel.model;
+
+import java.util.List;
+
+public class Metadata {
+    private String templateId;
+    private String elementType;
+    private List<Column> columns;
+    private String alignment;
+    private String logoPath;
+    private String imagePath;
+    private String barcodeValue;
+    private String chartType;
+    private String footerText;
+
+    // Getter and setter methods (or use Lombok for brevity)
+
+    public String getTemplateId() {
+        return templateId;
+    }
+
+    public void setTemplateId(String templateId) {
+        this.templateId = templateId;
+    }
+
+    public String getElementType() {
+        return elementType;
+    }
+
+    public void setElementType(String elementType) {
+        this.elementType = elementType;
+    }
+
+    public List<Column> getColumns() {
+        return columns;
+    }
+
+    public void setColumns(List<Column> columns) {
+        this.columns = columns;
+    }
+
+    public String getAlignment() {
+        return alignment;
+    }
+
+    public void setAlignment(String alignment) {
+        this.alignment = alignment;
+    }
+
+    public String getLogoPath() {
+        return logoPath;
+    }
+
+    public void setLogoPath(String logoPath) {
+        this.logoPath = logoPath;
+    }
+
+    public String getImagePath() {
+        return imagePath;
+    }
+
+    public void setImagePath(String imagePath) {
+        this.imagePath = imagePath;
+    }
+
+    public String getBarcodeValue() {
+        return barcodeValue;
+    }
+
+    public void setBarcodeValue(String barcodeValue) {
+        this.barcodeValue = barcodeValue;
+    }
+
+    public String getChartType() {
+        return chartType;
+    }
+
+    public void setChartType(String chartType) {
+        this.chartType = chartType;
+    }
+
+    public String getFooterText() {
+        return footerText;
+    }
+
+    public void setFooterText(String footerText) {
+        this.footerText = footerText;
+    }
+}
