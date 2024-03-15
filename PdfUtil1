@@ -1,0 +1,71 @@
+package com.example.pdfexcel.service;
+
+import com.itextpdf.text.*;
+import com.itextpdf.text.pdf.PdfPCell;
+import com.itextpdf.text.pdf.PdfPTable;
+import org.apache.commons.lang3.StringUtils;
+import org.springframework.scheduling.annotation.Async;
+import org.springframework.stereotype.Component;
+
+import java.util.List;
+import java.util.Map;
+import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+
+@Component
+public class PdfUtil {
+
+    private final ExecutorService executorService = Executors.newFixedThreadPool(5); // Adjust the pool size as needed
+
+    @Async
+    public CompletableFuture<byte[]> generatePdfAsync(List<Map<String, Object>> data, List<Table> tables) {
+        try {
+            Document document = new Document();
+            ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
+            PdfWriter.getInstance(document, outputStream);
+
+            document.open();
+            addElements(document, data, tables);
+            document.close();
+
+            return CompletableFuture.completedFuture(outputStream.toByteArray());
+        } catch (Exception e) {
+            e.printStackTrace();
+            return CompletableFuture.completedFuture(new byte[0]);
+        }
+    }
+
+    private void addElements(Document document, List<Map<String, Object>> data, List<Table> tables) throws Exception {
+        for (Table table : tables) {
+            switch (table.getElementType().toLowerCase()) {
+                case "logo":
+                    addLogo(document, StringUtils.defaultString((String) table.getAttributes().get("logoPath")));
+                    break;
+                case "table":
+                    addTable(document, data, table);
+                    break;
+                case "text":
+                    addText(document, StringUtils.defaultString((String) table.getAttributes().get("content")));
+                    break;
+                // Add cases for other element types as needed
+            }
+        }
+
+        // Generate repeated content blocks asynchronously
+        List<CompletableFuture<Void>> futures = tables.stream()
+                .filter(table -> "repeatedContent".equalsIgnoreCase(table.getElementType()))
+                .map(table -> CompletableFuture.runAsync(() -> addRepeatedContentBlock(document, data, table), executorService))
+                .toList();
+
+        // Wait for all asynchronous tasks to complete
+        CompletableFuture<Void> allOf = CompletableFuture.allOf(futures.toArray(new CompletableFuture[0]));
+        allOf.join();
+    }
+
+    private void addRepeatedContentBlock(Document document, List<Map<String, Object>> data, Table table) {
+        // Implement logic for generating repeated content blocks
+    }
+
+    // ... (Remaining methods remain unchanged)
+}
