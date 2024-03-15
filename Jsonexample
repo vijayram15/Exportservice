@@ -1,0 +1,33 @@
+{
+  "templateId": "your_template_id",
+  "elements": [
+    {
+      "elementType": "logo",
+      "attributes": {
+        "logoPath": "/path/to/your/logo.png"
+      }
+    },
+    {
+      "elementType": "table",
+      "columns": [
+        {"label": "Column 1", "valueKey": "col1"},
+        {"label": "Column 2", "valueKey": "col2"}
+        // Add more columns as needed
+      ],
+      "alignment": "center"
+    },
+    {
+      "elementType": "text",
+      "attributes": {
+        "content": "Your text content goes here."
+      }
+    },
+    {
+      "elementType": "repeatedContent",
+      "attributes": {
+        // Add attributes specific to your repeated content, if any
+      }
+    }
+    // Add more elements as needed
+  ]
+}
