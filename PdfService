@@ -1,0 +1,26 @@
+import com.itextpdf.text.Document;
+import com.itextpdf.text.pdf.PdfWriter;
+
+import java.io.ByteArrayOutputStream;
+import java.util.List;
+import java.util.Map;
+
+public class PdfService {
+
+    public static byte[] generatePdf(List<Map<String, Object>> data, List<Table> tables) {
+        try (ByteArrayOutputStream outputStream = new ByteArrayOutputStream()) {
+            Document document = new Document();
+            PdfWriter.getInstance(document, outputStream);
+            document.open();
+
+            PdfUtil.addElements(document, data, tables);
+
+            document.close();
+            return outputStream.toByteArray();
+        } catch (Exception e) {
+            e.printStackTrace();
+            // Handle the exception as needed
+            return new byte[0];
+        }
+    }
+}
